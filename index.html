@@ -556,9 +556,9 @@
             <button class="filter-btn active" data-genre="all" onclick="setGenreFilter('all')">All</button>
             <button class="filter-btn" data-genre="trap" onclick="setGenreFilter('trap')">Trap</button>
             <button class="filter-btn" data-genre="emo-rap" onclick="setGenreFilter('emo-rap')">Emo Rap</button>
-            <button class="filter-btn" data-genre="melodic" onclick="setGenreFilter('melodic')">Melodic</button>
+            <button class="filter-btn" data-genre="melodic-rap" onclick="setGenreFilter('melodic-rap')">Melodic Rap</button>
             <button class="filter-btn" data-genre="boom-bap" onclick="setGenreFilter('boom-bap')">Boom Bap</button>
-            <button class="filter-btn" data-genre="rage" onclick="setGenreFilter('rage')">Rage</button>
+            <button class="filter-btn" data-genre="melodic-trap" onclick="setGenreFilter('melodic-trap')">Melodic Trap</button>
         </div>
     </section>
 
@@ -579,86 +579,155 @@
         <button class="checkout-btn" onclick="checkout()">Checkout - $<span id="total">0</span></button>
     </div>
 
+    <!-- Stripe Integration -->
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+
     <script>
-        // Sample beat data
+        // Your actual beat data with real audio URLs
         const beats = [
             {
                 id: 1,
-                title: "Midnight Dreams",
-                genre: "emo-rap",
+                title: "Bad Days",
+                artist: "Polo G Type Beat",
+                genre: "melodic-rap",
                 bpm: 140,
                 key: "Am",
                 price: 29.99,
-                duration: "2:47",
-                tags: ["dark", "emotional", "guitar"],
-                mood: "melancholic"
+                tags: ["melodic", "emotional", "piano", "polo g"],
+                mood: "melancholic",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%202024%20Polo%20G%20Type%20Beat%20-%20Bad%20Days-%20%281%29.mp3"
             },
             {
                 id: 2,
-                title: "Neon Nights",
+                title: "Love Lost",
+                artist: "Sad Guitar Type Beat",
+                genre: "emo-rap",
+                bpm: 120,
+                key: "Dm",
+                price: 24.99,
+                tags: ["sad", "guitar", "emotional", "heartbreak"],
+                mood: "melancholic",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%202024%20Sad%20Guitar%20Type%20Beat%20-%20Love%20Lost%20%281%29.mp3"
+            },
+            {
+                id: 3,
+                title: "Lost Ones",
+                artist: "Boom Bap Beat",
+                genre: "boom-bap",
+                bpm: 95,
+                key: "Em",
+                price: 19.99,
+                tags: ["boom bap", "old school", "vinyl", "classic"],
+                mood: "nostalgic",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%20BOOM%20BAP%20BEAT%20-%20LOST%20ONES-.mp3"
+            },
+            {
+                id: 4,
+                title: "Back Then",
+                artist: "BigXThaPlug Type Beat",
                 genre: "trap",
                 bpm: 150,
                 key: "F#m",
                 price: 34.99,
-                duration: "3:12",
-                tags: ["hard", "808s", "synth"],
-                mood: "aggressive"
-            },
-            {
-                id: 3,
-                title: "Lost Soul",
-                genre: "melodic",
-                bpm: 120,
-                key: "Cm",
-                price: 39.99,
-                duration: "3:45",
-                tags: ["piano", "strings", "sad"],
-                mood: "emotional"
-            },
-            {
-                id: 4,
-                title: "Street Chronicles",
-                genre: "boom-bap",
-                bpm: 95,
-                key: "Dm",
-                price: 24.99,
-                duration: "2:33",
-                tags: ["vinyl", "drums", "classic"],
-                mood: "nostalgic"
+                tags: ["bigxthaplug", "trap", "hard", "street"],
+                mood: "aggressive",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%20BigXThaPlug%20Type%20Beat%20-%20Back%20Then.mp3"
             },
             {
                 id: 5,
-                title: "Rage Mode",
-                genre: "rage",
-                bpm: 160,
-                key: "Bm",
-                price: 44.99,
-                duration: "2:18",
-                tags: ["distorted", "loud", "energy"],
-                mood: "intense"
+                title: "Changes",
+                artist: "BigXThaPlug Type Beat",
+                genre: "trap",
+                bpm: 145,
+                key: "Cm",
+                price: 34.99,
+                tags: ["bigxthaplug", "trap", "melodic", "change"],
+                mood: "reflective",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%20BigXThaPlug%20Type%20Beat%20-%20Changes.mp3"
             },
             {
                 id: 6,
-                title: "Cyber Dreams",
+                title: "Pressure",
+                artist: "BigXThaPlug Type Beat",
                 genre: "trap",
-                bpm: 145,
-                key: "G#m",
-                price: 32.99,
-                duration: "3:01",
-                tags: ["futuristic", "electronic", "bass"],
-                mood: "mysterious"
+                bpm: 155,
+                key: "Gm",
+                price: 34.99,
+                tags: ["bigxthaplug", "pressure", "intense", "xoh beats"],
+                mood: "intense",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%20BigXThaPlug%20Type%20Beat%20-%20Pressure%20%28prod.%20XoH%21%20Beats%29.mp3"
+            },
+            {
+                id: 7,
+                title: "Publicity",
+                artist: "BigXThaPlug Type Beat",
+                genre: "trap",
+                bpm: 148,
+                key: "Am",
+                price: 34.99,
+                tags: ["bigxthaplug", "publicity", "commercial", "trap"],
+                mood: "confident",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%20BigXthaPlug%20Type%20Beat%20-%20Publicity.mp3"
+            },
+            {
+                id: 8,
+                title: "4LIFE",
+                artist: "DMGB Type Beat",
+                genre: "trap",
+                bpm: 140,
+                key: "Bm",
+                price: 29.99,
+                tags: ["dmgb", "4life", "loyalty", "trap"],
+                mood: "determined",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%20DMGB%20TYPE%20BEAT%20-%204LIFE.mp3"
+            },
+            {
+                id: 9,
+                title: "Petty",
+                artist: "DaBaby x Juice WRLD Type Beat",
+                genre: "melodic-trap",
+                bpm: 135,
+                key: "F#m",
+                price: 39.99,
+                tags: ["dababy", "juice wrld", "petty", "melodic"],
+                mood: "attitude",
+                audioUrl: "https://ia600900.us.archive.org/34/items/free-big-xtha-plug-type-beat-back-then/%28FREE%29%20DaBaby%20x%20Juice%20WRLD%20Type%20Beat%20-%20Petty.mp3"
             }
         ];
 
         let cart = [];
         let currentFilter = 'all';
-        let currentAudio = null;
+        let audioPlayers = {}; // Store audio instances
 
         // Initialize the beatstore
         document.addEventListener('DOMContentLoaded', function() {
             renderBeats();
             updateCartCount();
+            initializeAudioPlayers();
         });
+
+        // Initialize audio players for all beats
+        function initializeAudioPlayers() {
+            beats.forEach(beat => {
+                const audio = new Audio(beat.audioUrl);
+                audio.preload = 'metadata';
+                audio.addEventListener('loadedmetadata', () => {
+                    const duration = formatTime(audio.duration);
+                    const durationSpan = document.getElementById(`duration-${beat.id}`);
+                    if (durationSpan) {
+                        durationSpan.textContent = duration;
+                    }
+                });
+                audioPlayers[beat.id] = audio;
+            });
+        }
+
+        // Format time helper
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
 
         // Render beats to grid
         function renderBeats() {
@@ -722,52 +791,52 @@
             `).join('');
         }
 
-        // Toggle audio playback
+        // Toggle audio playback with real audio
         function togglePlay(beatId) {
+            const audio = audioPlayers[beatId];
             const playIcon = document.getElementById(`play-icon-${beatId}`);
             
-            if (currentAudio && !currentAudio.paused) {
-                currentAudio.pause();
-                document.getElementById(`play-icon-${currentAudio.beatId}`).innerHTML = '▶';
-            }
-
-            if (!currentAudio || currentAudio.beatId !== beatId) {
-                // Create new audio (simulated - in real implementation, use actual audio files)
-                currentAudio = {
-                    beatId: beatId,
-                    paused: false,
-                    currentTime: 0,
-                    duration: 180, // 3 minutes
-                    play: function() { this.paused = false; },
-                    pause: function() { this.paused = true; }
-                };
-                
+            // Stop any currently playing audio
+            Object.keys(audioPlayers).forEach(id => {
+                if (id != beatId && !audioPlayers[id].paused) {
+                    audioPlayers[id].pause();
+                    document.getElementById(`play-icon-${id}`).innerHTML = '▶';
+                }
+            });
+            
+            if (audio.paused) {
+                audio.play();
                 playIcon.innerHTML = '⏸';
-                simulateAudioProgress(beatId);
+                updateAudioProgress(beatId);
+            } else {
+                audio.pause();
+                playIcon.innerHTML = '▶';
             }
         }
 
-        // Simulate audio progress
-        function simulateAudioProgress(beatId) {
-            if (!currentAudio || currentAudio.beatId !== beatId || currentAudio.paused) return;
-            
+        // Update audio progress with real audio
+        function updateAudioProgress(beatId) {
+            const audio = audioPlayers[beatId];
             const progressBar = document.getElementById(`progress-${beatId}`);
             const timeDisplay = document.getElementById(`time-${beatId}`);
             
-            currentAudio.currentTime += 1;
-            const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
-            progressBar.style.width = `${progress}%`;
-            
-            const minutes = Math.floor(currentAudio.currentTime / 60);
-            const seconds = currentAudio.currentTime % 60;
-            timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            if (currentAudio.currentTime < currentAudio.duration) {
-                setTimeout(() => simulateAudioProgress(beatId), 1000);
-            } else {
-                document.getElementById(`play-icon-${beatId}`).innerHTML = '▶';
-                currentAudio = null;
+            function update() {
+                if (audio.paused) return;
+                
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = `${progress}%`;
+                timeDisplay.textContent = formatTime(audio.currentTime);
+                
+                if (!audio.paused && !audio.ended) {
+                    requestAnimationFrame(update);
+                } else if (audio.ended) {
+                    document.getElementById(`play-icon-${beatId}`).innerHTML = '▶';
+                    progressBar.style.width = '0%';
+                    timeDisplay.textContent = '0:00';
+                }
             }
+            
+            update();
         }
 
         // Filter functions
@@ -847,9 +916,161 @@
                 return;
             }
             
-            alert(`Proceeding to checkout with ${cart.length} beats. Total: $${cart.reduce((sum, item) => sum + item.price, 0).toFixed(2)}`);
-            // In a real implementation, this would redirect to payment processing
+            // Create Stripe checkout
+            createStripeCheckout();
         }
+
+        function createStripeCheckout() {
+            const checkoutContainer = document.createElement('div');
+            checkoutContainer.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    z-index: 3000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                " onclick="closeCheckout()">
+                    <div style="
+                        background: var(--secondary-bg);
+                        border: 2px solid var(--accent-color);
+                        border-radius: 20px;
+                        padding: 2rem;
+                        max-width: 500px;
+                        width: 90%;
+                        text-align: center;
+                        position: relative;
+                    " onclick="event.stopPropagation()">
+                        <button onclick="closeCheckout()" style="
+                            position: absolute;
+                            top: 1rem;
+                            right: 1rem;
+                            background: none;
+                            border: none;
+                            color: var(--text-primary);
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                        ">×</button>
+                        
+                        <h2 style="color: var(--accent-color); margin-bottom: 1rem;">🎵 Secure Checkout</h2>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">Your Order:</h3>
+                            ${cart.map(item => `
+                                <div style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    padding: 0.5rem 0;
+                                    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+                                ">
+                                    <span>${item.title}</span>
+                                    <span style="color: var(--neon-pink);">${item.price}</span>
+                                </div>
+                            `).join('')}
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                padding: 1rem 0;
+                                border-top: 2px solid var(--accent-color);
+                                margin-top: 1rem;
+                                font-size: 1.2rem;
+                                font-weight: bold;
+                            ">
+                                <span>Total:</span>
+                                <span style="color: var(--neon-pink);">${cart.reduce((sum, item) => sum + item.price, 0).toFixed(2)}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                Secure payment powered by Stripe
+                            </p>
+                        </div>
+                        
+                        <stripe-buy-button
+                            buy-button-id="buy_btn_1Rz8yILUBIhCQUcvsaTMc1CB"
+                            publishable-key="pk_live_51L9euVLUBIhCQUcvlY4JJpU6bNEGUbddar1vYSY9pcJfCUAzdGd02XtVE4EwmrPNrozOsNxnI0iPTn2z1H8dIICy00Qs0CA0D5"
+                        ></stripe-buy-button>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p style="color: var(--text-secondary); font-size: 0.8rem;">
+                                🔒 Your payment is secure and encrypted<br>
+                                💿 Instant download after purchase<br>
+                                📧 Receipt sent to your email
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            checkoutContainer.id = 'stripe-checkout';
+            document.body.appendChild(checkoutContainer);
+        }
+
+        function closeCheckout() {
+            const checkout = document.getElementById('stripe-checkout');
+            if (checkout) {
+                checkout.remove();
+            }
+        }
+
+        // Add download functionality after purchase
+        function downloadBeat(beatId) {
+            const beat = beats.find(b => b.id === beatId);
+            if (beat && beat.audioUrl) {
+                const link = document.createElement('a');
+                link.href = beat.audioUrl;
+                link.download = `${beat.title} - ${beat.artist}.mp3`;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show download confirmation
+                showNotification(`🎵 "${beat.title}" is downloading!`);
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 25px;
+                z-index: 4000;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 10px 20px rgba(255, 0, 128, 0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS for notification animations
+        const notificationStyle = document.createElement('style');
+        notificationStyle.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(notificationStyle);
 
         // Social functions
         function likeBeat(beatId) {
@@ -1081,7 +1302,11 @@
                 <div class="beat-card" data-genre="${beat.genre}" data-id="${beat.id}">
                     <div class="beat-header">
                         <h3 class="beat-title">${beat.title}</h3>
-                        <span class="beat-genre">${beat.genre.toUpperCase()}</span>
+                        <span class="beat-genre">${beat.genre.toUpperCase().replace('-', ' ')}</span>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">${beat.artist}</div>
                     </div>
                     
                     <div class="beat-info">
@@ -1095,7 +1320,7 @@
                         </div>
                         <div class="info-item">
                             <div class="info-label">Duration</div>
-                            <div class="info-value">${beat.duration}</div>
+                            <div class="info-value" id="duration-${beat.id}">--:--</div>
                         </div>
                     </div>
                     
