@@ -2,138 +2,126 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beatstore</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Framer Motion (via CDN build) -->
-  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
-  <!-- React + ReactDOM CDN -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <!-- Babel for JSX in the browser -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>D’Andre Spears Beatstore</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; background:#0d0d0d; color:#fff; }
+    header { background:#111; padding:20px; text-align:center; font-size:1.5rem; font-weight:bold; }
+    .store { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; padding:20px; }
+    .beat { background:#1a1a1a; padding:15px; border-radius:10px; text-align:center; }
+    .beat h3 { margin:10px 0; }
+    audio { width:100%; margin-top:10px; }
+    select,button,input { margin-top:10px; padding:8px; border:none; border-radius:5px; font-size:0.9rem; }
+    button { cursor:pointer; background:#ff4747; color:#fff; }
+    button:hover { background:#ff1c1c; }
+    #cart { background:#111; padding:20px; position:fixed; right:0; top:0; width:320px; height:100%; overflow-y:auto; border-left:2px solid #222; }
+    .cart-item { border-bottom:1px solid #333; padding:10px 0; }
+    .total { font-weight:bold; margin-top:20px; text-align:center; }
+    .checkout { display:flex; flex-direction:column; gap:10px; margin-top:15px; }
+    .coupon { display:flex; gap:5px; }
+    .coupon input { flex:1; }
+  </style>
 </head>
-<body class="bg-gray-900 text-white">
-  <div id="root"></div>
+<body>
+  <header>🎶 D’Andre Spears Beatstore 🎶</header>
+  <div class="store" id="store"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
-    const { motion } = window['framer-motion'];
+  <div id="cart">
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+    <div class="coupon">
+      <input type="text" id="coupon-code" placeholder="Coupon code"/>
+      <button onclick="applyCoupon()">Apply</button>
+    </div>
+    <div class="total" id="total">Total: $0</div>
+    <div class="checkout">
+      <button onclick="checkout('paypal')">Checkout with PayPal</button>
+      <button onclick="checkout('cashapp')">Checkout with CashApp</button>
+    </div>
+  </div>
 
+  <script>
     const beats = [
-      {
-        id: 1,
-        title: "Dreamscape",
-        genre: "Lo-fi",
-        cover: "https://via.placeholder.com/300x300.png?text=Dreamscape",
-        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-        price: 29.99
-      },
-      {
-        id: 2,
-        title: "Neon Streets",
-        genre: "Trap",
-        cover: "https://via.placeholder.com/300x300.png?text=Neon+Streets",
-        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-        price: 39.99
-      }
+      {name:"Polo G Type Beat - Bad Days", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+2024+Polo+G+Type+Beat+-+Bad+Days-+%281%29.mp3"},
+      {name:"Sad Guitar Type Beat - Love Lost", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+2024+Sad+Guitar+Type+Beat+-+Love+Lost+%281%29.mp3"},
+      {name:"Boom Bap Beat - Lost Ones", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+BOOM+BAP+BEAT+-+LOST+ONES-.mp3"},
+      {name:"BigXThaPlug Type Beat - Back Then", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+BigXThaPlug+Type+Beat+-+Back+Then.mp3"},
+      {name:"BigXThaPlug Type Beat - Changes", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+BigXThaPlug+Type+Beat+-+Changes.mp3"},
+      {name:"BigXThaPlug Type Beat - Pressure", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+BigXThaPlug+Type+Beat+-+Pressure+%28prod.+XoH%21+Beats%29.mp3"},
+      {name:"BigXThaPlug Type Beat - Publicity", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+BigXthaPlug+Type+Beat+-+Publicity.mp3"},
+      {name:"DMGB Type Beat - 4Life", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+DMGB+TYPE+BEAT+-+4LIFE.mp3"},
+      {name:"DaBaby x Juice WRLD Type Beat - Petty", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+DaBaby+x+Juice+WRLD+Type+Beat+-+Petty.mp3"},
+      {name:"Detroit Type Beat - Slappin 2", url:"https://archive.org/download/free-big-xtha-plug-type-beat-back-then/%28FREE%29+Detroit+Type+Beat+-+Slappin+2.mp3"}
     ];
 
-    function BeatCard({ beat, addToCart }) {
-      const [playing, setPlaying] = useState(false);
-      const audioRef = React.useRef(null);
+    const licenses = [
+      {type:"MP3 Lease", price:29},
+      {type:"WAV Lease", price:59},
+      {type:"Trackout Lease", price:149}
+    ];
 
-      const togglePlay = () => {
-        if (!playing) {
-          audioRef.current.play();
-        } else {
-          audioRef.current.pause();
-        }
-        setPlaying(!playing);
-      };
+    const coupons = {"DISCOUNT10":0.9,"FAM20":0.8};
+    let cart=[]; let discount=1;
 
-      return (
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="bg-gray-800 rounded-xl p-4 shadow-lg"
-        >
-          <img src={beat.cover} alt={beat.title} className="rounded-lg mb-4" />
-          <h2 className="text-xl font-bold">{beat.title}</h2>
-          <p className="text-sm text-gray-400">{beat.genre}</p>
-          <div className="flex items-center gap-2 mt-3">
-            <button
-              className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-white"
-              onClick={togglePlay}
-            >
-              {playing ? "Pause" : "Play"}
-            </button>
-            <button
-              className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-white"
-              onClick={() => addToCart(beat)}
-            >
-              Add to Cart (${beat.price})
-            </button>
-          </div>
-          <audio src={beat.audio} ref={audioRef} onEnded={() => setPlaying(false)} />
-        </motion.div>
-      );
+    function renderStore(){
+      const store=document.getElementById("store");
+      beats.forEach((beat,i)=>{
+        const div=document.createElement("div");
+        div.className="beat";
+        div.innerHTML=`
+          <h3>${beat.name}</h3>
+          <audio controls><source src="${beat.url}" type="audio/mpeg"></audio>
+          <select id="license-${i}">
+            ${licenses.map(l=>`<option value="${l.price}">${l.type} - $${l.price}</option>`).join("")}
+          </select>
+          <button onclick="addToCart(${i})">Add to Cart</button>`;
+        store.appendChild(div);
+      });
     }
 
-    function Cart({ cart, setCart }) {
-      const total = cart.reduce((sum, b) => sum + b.price, 0).toFixed(2);
-      const removeFromCart = (id) => setCart(cart.filter(b => b.id !== id));
-
-      return (
-        <div className="fixed bottom-4 right-4 bg-gray-800 p-4 rounded-xl shadow-lg w-64">
-          <h3 className="text-lg font-bold mb-2">Cart</h3>
-          {cart.length === 0 ? (
-            <p className="text-gray-400">No items in cart</p>
-          ) : (
-            <div>
-              {cart.map((item) => (
-                <div key={item.id} className="flex justify-between items-center mb-1">
-                  <span>{item.title}</span>
-                  <button onClick={() => removeFromCart(item.id)} className="text-red-400">x</button>
-                </div>
-              ))}
-              <p className="mt-2 font-bold">Total: ${total}</p>
-              <a
-                href="https://paypal.me/YOURPAYPALHANDLE"
-                target="_blank"
-                className="block bg-blue-500 hover:bg-blue-600 text-center mt-2 py-1 rounded"
-              >
-                Checkout
-              </a>
-            </div>
-          )}
-        </div>
-      );
+    function addToCart(i){
+      const sel=document.getElementById(`license-${i}`);
+      const price=parseInt(sel.value);
+      const licenseType=sel.options[sel.selectedIndex].text;
+      cart.push({beat:beats[i].name,url:beats[i].url,license:licenseType,price});
+      renderCart();
     }
 
-    function App() {
-      const [cart, setCart] = useState([]);
-
-      const addToCart = (beat) => {
-        if (!cart.find(item => item.id === beat.id)) {
-          setCart([...cart, beat]);
-        }
-      };
-
-      return (
-        <div className="p-6">
-          <h1 className="text-3xl font-bold mb-6">Beatstore</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {beats.map((beat) => (
-              <BeatCard key={beat.id} beat={beat} addToCart={addToCart} />
-            ))}
-          </div>
-          <Cart cart={cart} setCart={setCart} />
-        </div>
-      );
+    function renderCart(){
+      const div=document.getElementById("cart-items");
+      div.innerHTML="";
+      cart.forEach((item,idx)=>{
+        div.innerHTML+=`
+          <div class="cart-item">
+            ${item.beat} - ${item.license}<br/>$${item.price}
+            <button onclick="removeFromCart(${idx})">Remove</button>
+          </div>`;
+      });
+      updateTotal();
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    function removeFromCart(idx){ cart.splice(idx,1); renderCart(); }
+
+    function updateTotal(){
+      let total=cart.reduce((s,i)=>s+i.price,0)*discount;
+      document.getElementById("total").innerText="Total: $"+Math.round(total);
+    }
+
+    function applyCoupon(){
+      const code=document.getElementById("coupon-code").value.toUpperCase();
+      if(coupons[code]){ discount=coupons[code]; updateTotal(); alert("Coupon applied!"); }
+      else alert("Invalid coupon.");
+    }
+
+    function checkout(method){
+      let total=cart.reduce((s,i)=>s+i.price,0)*discount;
+      localStorage.setItem("order",JSON.stringify(cart)); // save cart for thankyou page
+      if(method==="paypal") window.open(`https://paypal.me/dandrespears/${Math.round(total)}`,"_blank");
+      if(method==="cashapp") window.open(`https://cash.app/$xollent25/${Math.round(total)}`,"_blank");
+      setTimeout(()=>window.location.href="thankyou.html",2000); // auto-redirect
+    }
+
+    renderStore();
   </script>
 </body>
 </html>
